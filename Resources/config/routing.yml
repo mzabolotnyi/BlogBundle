@@ -1,0 +1,9 @@
+mauris_blog_review:
+    resource: "@MaurisBlogBundle/Controller/ReviewController.php"
+    type: annotation
+    prefix: /
+
+mauris_blog_news:
+    resource: "@MaurisBlogBundle/Controller/NewsController.php"
+    type: annotation
+    prefix: /

@@ -1,0 +1,142 @@
+<?php
+
+namespace Mauris\BlogBundle\Entity;
+
+use Core\ApiBundle\Traits\UuidGenerator;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Core\ApiBundle\Traits\TimestampableEntity;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * @ORM\Table(name="blog_news")
+ * @ORM\Entity()
+ */
+class News
+{
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+    use UuidGenerator;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @Assert\NotBlank()
+     * @Serializer\Groups("news")
+     * @ORM\Column(name="uuid", type="string", nullable=false, unique=true)
+     */
+    private $uuid;
+
+    /**
+     * @var string
+     *
+     * @Assert\NotBlank()
+     * @Serializer\Groups("news")
+     * @ORM\Column(name="title", type="string", nullable=false)
+     */
+    private $title;
+
+    /**
+     * @var string
+     *
+     * @Assert\NotBlank()
+     * @Serializer\Groups("news")
+     * @ORM\Column(name="content", type="text", nullable=false)
+     */
+    private $content;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Mauris\BlogBundle\Entity\NewsComment", mappedBy="news", cascade={"persist", "remove"})
+     */
+    private $comments;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Mauris\BlogBundle\Entity\NewsLike", mappedBy="news", cascade={"persist", "remove"})
+     */
+    private $likes;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Mauris\BlogBundle\Entity\NewsImage", mappedBy="news", cascade={"persist", "remove"})
+     */
+    private $images;
+
+    public function __construct()
+    {
+        $this->uuid = $this->generateUuid();
+        $this->comments = new ArrayCollection();
+        $this->likes = new ArrayCollection();
+        $this->images = new ArrayCollection();
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     * @Serializer\SerializedName("createdAt")
+     * @Serializer\Groups("news")
+     * @return \DateTime
+     */
+    public function getCreatedAtVirtual()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     * @Serializer\SerializedName("updatedAt")
+     * @Serializer\Groups("news")
+     * @return \DateTime
+     */
+    public function getUpdatedAtVirtual()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     * @Serializer\SerializedName("countLikes")
+     * @Serializer\Groups("news")
+     * @return int
+     */
+    public function getCountLikes()
+    {
+        return $this->likes->count();
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     * @Serializer\SerializedName("countComments")
+     * @Serializer\Groups("news")
+     * @return int
+     */
+    public function getCountComments()
+    {
+        return $this->comments->count();
+    }
+
+    /**
+     * @Serializer\VirtualProperty()
+     * @Serializer\SerializedName("images")
+     * @Serializer\Groups("news")
+     * @return array
+     */
+    public function getImagesVirtual()
+    {
+        $images = [];
+
+        foreach ($this->images as $reviewImage) {
+            $images[] = $reviewImage->getMedia();
+        }
+
+        return $images;
+    }
+}

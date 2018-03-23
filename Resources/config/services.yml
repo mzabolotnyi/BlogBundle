@@ -1,0 +1,44 @@
+services:
+    mauris_blog.review_serialize_listener:
+        class: Mauris\BlogBundle\Listener\SerializeReviewListener
+        arguments: ["@service_container"]
+        tags:
+            - { name: jms_serializer.event_listener, event: serializer.post_serialize, method: onPostSerialize, class: Mauris\BlogBundle\Entity\Review }
+
+    mauris_blog.news_serialize_listener:
+        class: Mauris\BlogBundle\Listener\SerializeNewsListener
+        arguments: ["@service_container"]
+        tags:
+            - { name: jms_serializer.event_listener, event: serializer.post_serialize, method: onPostSerialize, class: Mauris\BlogBundle\Entity\News }
+
+    mauris_blog.review_service:
+        class: Mauris\BlogBundle\Service\ReviewService
+        arguments: ["@service_container"]
+
+    mauris_blog.news_service:
+        class: Mauris\BlogBundle\Service\NewsService
+        arguments: ["@service_container"]
+
+    mauris_blog.review_manager:
+        class: Mauris\BlogBundle\Service\ReviewManager
+        arguments: ["@service_container"]
+
+    mauris_blog.review_like_manager:
+        class: Mauris\BlogBundle\Service\ReviewLikeManager
+        arguments: ["@service_container"]
+
+    mauris_blog.review_comment_manager:
+        class: Mauris\BlogBundle\Service\ReviewCommentManager
+        arguments: ["@service_container"]
+
+    mauris_blog.news_manager:
+        class: Mauris\BlogBundle\Service\NewsManager
+        arguments: ["@service_container"]
+
+    mauris_blog.news_like_manager:
+        class: Mauris\BlogBundle\Service\NewsLikeManager
+        arguments: ["@service_container"]
+
+    mauris_blog.news_comment_manager:
+        class: Mauris\BlogBundle\Service\NewsCommentManager
+        arguments: ["@service_container"]
